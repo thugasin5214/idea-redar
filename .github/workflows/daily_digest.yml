@@ -1,0 +1,76 @@
+name: Daily Idea Radar Digest
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # 8:00 AM EDT (UTC-4)
+  workflow_dispatch:        # Allow manual trigger from GitHub UI
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Generate config.yaml from secrets
+        run: |
+          python3 - << 'EOF'
+          import yaml
+
+          # Load the example config as base
+          with open('config.example.yaml') as f:
+              config = yaml.safe_load(f)
+
+          # Override with secrets from environment
+          import os
+          config['ai']['api_key'] = os.environ['OPENROUTER_API_KEY']
+          config['ai']['model'] = os.environ.get('AI_MODEL', 'openai/gpt-4o-mini:free')
+          config['ai']['fallback_model'] = os.environ.get('AI_FALLBACK_MODEL', 'google/gemini-flash-1.5:free')
+          config['email']['sender'] = os.environ['GMAIL_SENDER']
+          config['email']['password'] = os.environ['GMAIL_PASSWORD']
+          config['email']['recipient'] = os.environ['GMAIL_RECIPIENT']
+
+          # Reddit credentials if provided
+          if 'REDDIT_CLIENT_ID' in os.environ:
+              config['sources']['reddit']['client_id'] = os.environ['REDDIT_CLIENT_ID']
+          if 'REDDIT_CLIENT_SECRET' in os.environ:
+              config['sources']['reddit']['client_secret'] = os.environ['REDDIT_CLIENT_SECRET']
+
+          with open('config.yaml', 'w') as f:
+              yaml.dump(config, f, default_flow_style=False)
+
+          print("config.yaml generated successfully")
+          EOF
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+          AI_FALLBACK_MODEL: ${{ secrets.AI_FALLBACK_MODEL }}
+          GMAIL_SENDER: ${{ secrets.GMAIL_SENDER }}
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          GMAIL_RECIPIENT: ${{ secrets.GMAIL_RECIPIENT }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+
+      - name: Run daily digest
+        run: python scripts/run_daily.py
+        env:
+          PYTHONUNBUFFERED: '1'
+
+      - name: Upload database artifact (for debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: idea-radar-db-${{ github.run_id }}
+          path: data/idea_radar.db
+          retention-days: 7
