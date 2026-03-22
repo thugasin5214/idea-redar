@@ -1,0 +1,19 @@
+config.yaml
+data/*.db
+.env
+__pycache__/
+*.pyc
+.venv/
+dist/
+*.egg-info/
+# Aider history
+.aider.chat.history.md
+.aider.input.history
+
+# Task files (internal)
+TASK_*.md
+P3_COMPLETION_SUMMARY.md
+test_structure.py
+
+# Misc
+pandoc-*.pkg

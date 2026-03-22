@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Radar Digest</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f5f5f5;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 30px 30px 20px 30px; border-bottom: 1px solid #e0e0e0;">
+                            <h1 style="margin: 0; font-size: 24px; color: #333333;">
+                                🔭 Idea Radar Digest — {{ date }}
+                            </h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Stats Section -->
+                    <tr>
+                        <td style="padding: 20px 30px; background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                            <h2 style="margin: 0 0 15px 0; font-size: 16px; color: #666666;">📊 Today's Run</h2>
+                            <ul style="margin: 0; padding-left: 20px; color: #666666; font-size: 14px; line-height: 1.6;">
+                                <li><strong>Sources:</strong> {{ sources }} (last {{ time_window }} hours)</li>
+                                <li><strong>Collected:</strong> {{ total_collected }} posts → {{ after_keyword }} passed keyword filter → {{ classified - noise_filtered }} relevant after AI review</li>
+                                <li><strong>Focus:</strong> {{ focus }}</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    
+                    {% if has_content %}
+                        <!-- Content Sections -->
+                        {% for section in sections %}
+                        <tr>
+                            <td style="padding: 25px 30px 5px 30px;">
+                                <h2 style="margin: 0; font-size: 18px; color: #333333;">
+                                    {{ section.icon }} {{ section.label }} <span style="color: #999999; font-weight: normal;">({{ section.count }})</span>
+                                </h2>
+                                <hr style="border: none; border-top: 2px solid #e0e0e0; margin: 10px 0 15px 0;">
+                            </td>
+                        </tr>
+                        
+                        {% for post in section.posts %}
+                        <tr>
+                            <td style="padding: 0 30px 20px 30px;">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td>
+                                            <a href="{{ post.url }}" style="color: #1a73e8; text-decoration: none; font-size: 16px; font-weight: 500; line-height: 1.4;">
+                                                {{ post.title[:100] }}{% if post.title|length > 100 %}...{% endif %}
+                                            </a>
+                                            <span style="color: #999999; font-size: 13px;">
+                                                ({% if post.subreddit %}r/{{ post.subreddit }}{% else %}Indie Hackers{% endif %} · ↑{{ post.score }})
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% if post.ai_summary %}
+                                    <tr>
+                                        <td style="padding-top: 8px;">
+                                            <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.5;">
+                                                {{ post.ai_summary }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if post.ai_opportunity %}
+                                    <tr>
+                                        <td style="padding-top: 8px;">
+                                            <p style="margin: 0; color: #0d7a3e; font-size: 14px; line-height: 1.5;">
+                                                <strong>💼 Opportunity:</strong> {{ post.ai_opportunity }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <!-- No Content Message -->
+                        <tr>
+                            <td style="padding: 40px 30px; text-align: center;">
+                                <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #666666;">🌙 Quiet Day</h2>
+                                <p style="margin: 0; color: #999999; font-size: 14px;">
+                                    No highly relevant posts found today. We'll keep monitoring and notify you when interesting discussions emerge.
+                                </p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 20px 30px; border-top: 1px solid #e0e0e0; background-color: #f8f9fa;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style="color: #999999; font-size: 12px; text-align: center;">
+                                        Sent by Idea Radar 🐍 · {{ recipient_email }}<br>
+                                        <span style="color: #999999;">Unsubscribe: edit config.yaml</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
