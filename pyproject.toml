@@ -15,3 +15,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-mock"]
+
+[tool.setuptools.packages.find]
+include = ["idea_radar*"]
