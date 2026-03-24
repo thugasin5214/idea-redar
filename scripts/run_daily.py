@@ -13,6 +13,7 @@ from idea_radar.config import load_config
 from idea_radar.db import init_db, save_posts, update_classification, get_unsent_posts, mark_sent
 from idea_radar.collectors.reddit import RedditCollector
 from idea_radar.collectors.indie_hackers import IndieHackersCollector
+from idea_radar.collectors.hacker_news import HackerNewsCollector
 from idea_radar.classifier.ai_classifier import AIClassifier
 from idea_radar.models import Category
 from idea_radar.digest.builder import DigestBuilder
@@ -56,7 +57,20 @@ def main():
         console.print(f"Indie Hackers: [green]{len(ih_posts)}[/green] posts after filter, [green]{ih_new}[/green] new")
         all_posts.extend(ih_posts)
     
-    total_collected = reddit_total_estimate + ih_total_estimate
+    # Collect from Hacker News
+    hn_total_estimate = 0
+    if config.sources.hacker_news and config.sources.hacker_news.enabled:
+        console.print("\n[cyan]Collecting from Hacker News...[/cyan]")
+        hn = HackerNewsCollector(config)
+        hn_posts = hn.collect()
+        after_keyword_filter += len(hn_posts)
+        # Estimate total collected (HN collector filters ~50-70% typically)
+        hn_total_estimate = int(len(hn_posts) * 2.5) if hn_posts else 0
+        hn_new = save_posts(conn, hn_posts)
+        console.print(f"Hacker News: [green]{len(hn_posts)}[/green] posts after filter, [green]{hn_new}[/green] new")
+        all_posts.extend(hn_posts)
+    
+    total_collected = reddit_total_estimate + ih_total_estimate + hn_total_estimate
     
     # Classify unclassified posts
     classified_posts = []
@@ -121,6 +135,10 @@ def main():
     # Add Indie Hackers to sources if enabled
     if config.sources.indie_hackers.enabled:
         run_stats["sources"].append("Indie Hackers")
+    
+    # Add Hacker News to sources if enabled
+    if config.sources.hacker_news and config.sources.hacker_news.enabled:
+        run_stats["sources"].append("Hacker News")
     
     # Get all unsent posts from the time window
     time_window = datetime.now(timezone.utc) - timedelta(hours=config.sources.reddit.time_window_hours)

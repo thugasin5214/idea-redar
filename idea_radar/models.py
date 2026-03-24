@@ -20,6 +20,7 @@ class Source(str, Enum):
     """Sources for posts."""
     REDDIT = "reddit"
     INDIE_HACKERS = "indie_hackers"
+    HACKER_NEWS = "hacker_news"
 
 
 @dataclass

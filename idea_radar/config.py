@@ -27,10 +27,19 @@ class IndieHackersConfig:
 
 
 @dataclass
+class HackerNewsConfig:
+    """Hacker News source configuration."""
+    enabled: bool
+    feeds: List[str]
+    max_items_per_feed: int
+
+
+@dataclass
 class SourcesConfig:
     """Sources configuration."""
     reddit: RedditConfig
     indie_hackers: IndieHackersConfig
+    hacker_news: Optional[HackerNewsConfig] = None
 
 
 @dataclass
@@ -149,9 +158,20 @@ def load_config(path: str = "config.yaml") -> Config:
         enabled=data["sources"]["indie_hackers"]["enabled"]
     )
     
+    # Parse Hacker News config if present
+    hacker_news_config = None
+    if "hacker_news" in data["sources"]:
+        hn_data = data["sources"]["hacker_news"]
+        hacker_news_config = HackerNewsConfig(
+            enabled=hn_data["enabled"],
+            feeds=hn_data["feeds"],
+            max_items_per_feed=hn_data["max_items_per_feed"]
+        )
+    
     sources_config = SourcesConfig(
         reddit=reddit_config,
-        indie_hackers=indie_hackers_config
+        indie_hackers=indie_hackers_config,
+        hacker_news=hacker_news_config
     )
     
     # Parse keywords

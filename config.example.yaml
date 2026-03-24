@@ -91,3 +91,9 @@ sources:
     - microsaas
     time_window_hours: 24
     user_agent: idea-radar/1.0
+  hacker_news:
+    enabled: true
+    feeds:
+    - askstories
+    - showstories
+    max_items_per_feed: 100
