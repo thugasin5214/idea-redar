@@ -1,68 +1,93 @@
-sources:
-  reddit:
-    client_id: "YOUR_REDDIT_CLIENT_ID"
-    client_secret: "YOUR_REDDIT_CLIENT_SECRET"
-    user_agent: "idea-radar/1.0"
-    subreddits:
-      - SideProject
-      - indiehackers
-      - SaaS
-      - startups
-      - Entrepreneur
-      - microsaas
-    min_score: 10
-    max_posts_per_sub: 50
-    time_window_hours: 24
-  indie_hackers:
-    enabled: true
-
-keywords:
-  include:
-    - "pain point"
-    - "struggling with"
-    - "wish there was"
-    - "hate that"
-    - "broken"
-    - "frustrated"
-    - "looking for a tool"
-    - "does anyone know"
-    - "built this"
-    - "launched"
-    - "side project"
-    - "indie hacker"
-  exclude:
-    - "hiring"
-    - "job posting"
-    - "remote job"
-    - "resume"
-
 ai:
-  provider: openrouter
-  api_key: "YOUR_OPENROUTER_API_KEY"
-  model: "qwen/qwen-2.5-72b-instruct:free"
-  fallback_model: "google/gemini-flash-1.5:free"
+  api_key: YOUR_OPENROUTER_API_KEY
   batch_size: 10
+  fallback_model: google/gemini-flash-1.5:free
+  model: qwen/qwen-2.5-72b-instruct:free
   prompt:
-    focus: "side projects, startup ideas, and user pain points in the indie hacker community"
-    extra_instructions: ""  # Optional: e.g. "Focus only on B2B SaaS opportunities"
     categories:
-      pain_point: "User expressing frustration, problem, or unmet need"
-      idea: "Someone sharing a startup or side project idea"
-      project_launch: "Announcing a new product, project, or milestone"
-      lesson_learned: "Sharing experience, retrospective, or advice from building"
-      noise: "Off-topic, promotional spam, or not relevant to indie hackers/side projects"
-
+      idea: Someone sharing a startup or side project idea
+      lesson_learned: Sharing experience, retrospective, or advice from building
+      noise: Off-topic, promotional spam, or not relevant to indie hackers/side projects
+      pain_point: User expressing frustration, problem, or unmet need
+      project_launch: Announcing a new product, project, or milestone
+    extra_instructions: ''
+    focus: side projects, startup ideas, and user pain points in the indie hacker
+      community
+  provider: openrouter
+database:
+  path: data/idea_radar.db
 email:
+  password: YOUR_APP_PASSWORD
+  recipient: YOUR_EMAIL@example.com
+  send_hour: 8
+  sender: YOUR_GMAIL@gmail.com
   smtp_host: smtp.gmail.com
   smtp_port: 587
-  sender: "YOUR_GMAIL@gmail.com"
-  password: "YOUR_APP_PASSWORD"
-  recipient: "YOUR_EMAIL@example.com"
-  send_hour: 8
-  timezone: "America/Toronto"
-
-database:
-  path: "data/idea_radar.db"
-
+  timezone: America/Toronto
+keywords:
+  exclude:
+  - hiring
+  - job posting
+  - remote job
+  - resume
+  include:
+  - pain point
+  - struggling with
+  - wish there was
+  - hate that
+  - broken
+  - frustrated
+  - annoying
+  - problem with
+  - issue with
+  - no good tool
+  - can't find
+  - nothing exists
+  - built this
+  - launched
+  - side project
+  - indie hacker
+  - saas
+  - my app
+  - my tool
+  - i made
+  - i built
+  - just shipped
+  - just launched
+  - first customer
+  - mrr
+  - revenue
+  - bootstrapped
+  - idea
+  - opportunity
+  - market gap
+  - nobody is doing
+  - would pay for
+  - willing to pay
+  - need a tool
+  - lesson learned
+  - what i learned
+  - mistake
+  - failed
+  - pivoted
+  - how i
+  - my journey
 logging:
   level: INFO
+sources:
+  indie_hackers:
+    enabled: true
+  reddit:
+    client_id: YOUR_REDDIT_CLIENT_ID
+    client_secret: YOUR_REDDIT_CLIENT_SECRET
+    max_posts_per_sub: 50
+    min_score: 5
+    subreddits:
+    - SideProject
+    - indiehackers
+    - SaaS
+    - startups
+    - Entrepreneur
+    - microsaas
+    time_window_hours: 24
+    user_agent: idea-radar/1.0
