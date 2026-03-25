@@ -17,3 +17,6 @@ test_structure.py
 
 # Misc
 pandoc-*.pkg
+*.swp
+*.swo
+config.yaml
